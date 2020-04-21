@@ -1,0 +1,46 @@
+- name: msg-sevice playbook
+  hosts: control
+  become: yes
+
+  vars:
+    source_file: /home/devops/practice/files/msg-service.config.j2 
+    source_unit: /home/devops/practice/files/msg-service.service
+    dest_dir: /opt/msg-service
+    FirstName: Aliaksandr
+    LastName: Krasnitskiy
+
+  tasks:
+  - name: create group msg
+    group:
+      name: msg-service
+      state: present
+
+  - name: create user msg
+    user: 
+      name: msg-service
+      group: msg-service
+
+  - name: create folder conf
+    file: path={{ dest_dir }}/conf state=directory #mode=0777 owner=msg-service group=msg-service
+
+  - name: create folder bin
+    file: path={{ dest_dir }}/bin state=directory #mode=0777 owner=msg-service group=msg-service
+
+  - name: download msg-server
+    get_url: url=https://playpit-labs-assets.s3-eu-west-1.amazonaws.com/msg-service/msg-server dest={{ dest_dir }} #mode=0777
+  
+  - name: copy conf config
+    template:
+      src: "{{ source_file }}"
+      dest: "{{ dest_dir }}/conf/msg-server.conf"
+
+  - name: copy unit
+    copy: src={{ source_unit}} dest=/lib/systemd/system/ #owner=root group=root mode=0644
+  
+  - name: enable application service
+    service: name=msg-service enabled=yes
+  
+  - name: start application service
+    systemd:
+      state: started
+      name: msg-service.service
