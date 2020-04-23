@@ -16,9 +16,4 @@
     - pythom-devel
     - curl
   become: yes
-                                
-- lineinfile:
-  path: /etc/sudoers
-  regexp: '^Defaults'
-  line: 'Defaults        !requiretty'
-  become: yes  
+    
