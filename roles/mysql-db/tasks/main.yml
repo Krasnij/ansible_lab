@@ -1,0 +1,34 @@
+- name: Install mysql
+  yum: name=https://repo.mysql.com/mysql80-community-release-el7-3.noarch.rpm
+  become: yes
+
+- name: Install other packages for mysql
+  yum:
+    name:
+    - mysql-community-server
+    - mysql-community-devel
+    enablerepo: mysql80-community
+  become: yes
+
+- name: Initialize bd
+  shell: mysqld --initialize-insecure --user=mysql
+  notify: 
+  - mysql enable
+  when: ansible_local.mysql is undefined or not ansible_local.mysql.initialized
+
+- name: Run and enable mysql
+  systemd:
+    name: mysqld
+    state: started
+    enabled: yes
+
+- name: Set root
+  shell: echo "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';" | mysql -u root --skip-password
+  notify:
+  - mysql root password set
+  when: ansible_local.mysql is undefined or not ansible_local.mysql.root_password or ansible_local.mysql.root_password is undefined
+
+- name: fix mysql
+  get_url:
+    url: https://raw.githubusercontent.com/paulfitz/mysql-connector-c/master/include/my_config.h
+    dest: /usr/include/mysql

@@ -1,0 +1,16 @@
+- name: mysql enabled
+  copy:
+    content: >
+      {
+        "initialized": true
+      }
+    dest: /etc/ansible/facts.d/mysql.fact
+
+- name: mysql root password set
+  copy:
+    content: >
+      {
+        "initialized": true,
+        "root_password": true
+      }
+    dest: /etc/ansible/facts.d/mysql.fact
