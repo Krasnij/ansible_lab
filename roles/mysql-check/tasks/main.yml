@@ -26,8 +26,8 @@
   copy:
     content: "PORT={{ mysql_check_port }}"
     dest: /opt/mysql-check/conf/mysql-check.conf
+    mode: 0777
   become: yes
-  mode: 0777
 
 - name: copy unit
   copy:
