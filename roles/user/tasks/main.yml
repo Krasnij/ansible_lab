@@ -1,0 +1,22 @@
+- name: Create group
+  become: yes
+  group:
+    name: "{{ group_name }}"
+    gid: "{{ group_id }}"
+  state: present
+
+- name: Create user
+  become: yes
+  user:
+    name: "{{ user_name }}"
+    uid: "{{ user_id }}"
+    group: "{{ group_name }}"
+  append: yes
+
+- name: Copy sudoers
+  become: yes
+  template:
+    src: {{ user_name }}.sudoers.j2
+    dest: "/etc/sudoers.d/{{ user_name }}"
+  mode: 0644
+
