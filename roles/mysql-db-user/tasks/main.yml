@@ -1,0 +1,10 @@
+- pip : name=MySQL-python
+
+- name: create mysql user
+  mysql_user:
+    login_user: "{{ root_name }}"
+    login_password: "{{ root_password  }}"
+    name: "{{ user_name }}"
+    password: "{{ user_password  }}"
+    priv: "*.*:ALL"
+    state: present

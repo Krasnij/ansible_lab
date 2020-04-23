@@ -1,2 +1,43 @@
----
-# tasks file for mysql-check
+- name: create group
+  become: yes
+  group:
+    name: mysql-check
+    state: present
+
+- name: create user
+  become: yes
+  user:
+    name: mysql-check
+    group: mysql-check
+
+- name: create folder conf
+  file: path=/opt/mysql-check/conf state=directory mode=0777 #owner=msg-service group=msg-service
+  become: yes
+
+- name: create folder bin
+  file: path=/opt/mysql-check/bin state=directory mode=0777 #owner=msg-service group=msg-service
+  become: yes
+
+- name: download
+  get_url: url=https://playpit-labs-assets.s3-eu-west-1.amazonaws.com/mysql-check/mysql-check dest="/opt/mysql-check/bin" mode=0777
+  become: yes
+
+- name: copy conf
+  copy:
+    content: "PORT={{ mysql_check_port }}"
+    dest: /opt/mysql-check/conf/mysql-check.conf
+  become: yes
+  mode: 0777
+
+- name: copy unit
+  copy:
+    src: mysql-check.service
+    dest: /etc/systemd/system/mysql-check.service mode=0644 owner=root group=root
+
+- name: enable application service
+  service: name=mysql-check enabled=yes
+
+- name: start application service
+  systemd:
+    state: started
+    name: mysql-check

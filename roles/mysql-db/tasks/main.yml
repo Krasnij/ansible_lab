@@ -10,17 +10,17 @@
     enablerepo: mysql80-community
   become: yes
 
-- name: Initialize bd
-  shell: mysqld --initialize-insecure --user=mysql
-  notify: 
-  - mysql enable
-  when: ansible_local.mysql is undefined or not ansible_local.mysql.initialized
-
 - name: Run and enable mysql
   systemd:
     name: mysqld
     state: started
     enabled: yes
+
+- name: Initialize bd
+  shell: mysqld --initialize-insecure --user=mysql
+  notify: 
+  - mysql enable
+  when: ansible_local.mysql is undefined or not ansible_local.mysql.initialized
 
 - name: Set root
   shell: echo "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';" | mysql -u root --skip-password
