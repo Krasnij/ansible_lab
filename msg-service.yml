@@ -1,5 +1,5 @@
 - name: msg-sevice playbook
-  hosts: control
+  hosts: 10.0.0.4
   become: yes
 
   vars:
